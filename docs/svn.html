@@ -1,0 +1,301 @@
+<html>
+<head>
+<title>
+SMITASIN/SVN
+</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+</head>
+<body>
+<div id="headblock">
+<img src="../flag.png" height=32px width=50px>
+<a href="../"><h1>SMITASIN</a>/<a href="../docs.html">DOCS</a>/<br>
+Subversion (SVN)</h1>
+<hr>
+</div>
+<div id="textblock">
+<p>A lot of this is stolen from my colleague <a href="http://ee.lbl.gov/leres/svn.html">Craig Leres' SVN notes</a> page, or from work he's done, so all credit goes to him.</p>
+<h2>Purpose</h2><br>
+<p>
+This is a quick and dirty guide to Subersion (SVN), a version control system. For those familiar with RCS and CVS, the two major differences with SVN are:<br>
+<ul>
+<li>You can check-out a copy to a different location, even a different host, edit it there, commit it to the repo, then update the working directory that the system/application uses afterward. You don't have to edit the files live (though you have the option to).</li>
+<li>If you choose to just edit the files that the system/application uses live, you don't need to check-out the files, you can just commit them and then update that working directory afterward.</li>
+</ul>
+</p>
+<h2>Comparing basic RCS and SVN workflows</h2><br>
+<p>
+This is an example workflow of editing a file:<br><br>
+<table>
+<tr valign=top>
+<td>
+<pre>
+# RCS
+co -l example.conf
+vi example.conf
+rcs diff
+ci -u example.conf        
+</pre>
+</td>
+<td>
+<pre>
+# SVN
+vi example.conf
+svn diff
+svn commit -m "This is a comment"
+svn update
+</pre>
+</td>
+</tr>
+</table>
+</p>
+<h2>Setting up SVN</h2><br>
+<p>
+On CentOS, the installation is pretty easy. As you would expect:<br>
+<pre>
+yum install svn
+</pre>
+However, putting your files into SVN is a little more involved than RCS.<br><br>
+<table>
+<tr valign=top>
+<td>
+<pre>
+# RCS
+ci example.conf
+co -l example.conf        
+ci -u example.conf
+</pre>
+</td>
+<td>
+<pre>
+# SVN
+## Create the repo directories
+mkdir /usr/src/svn
+mkdir /usr/src/svn/example
+
+## Add the repo directories to SVN
+svnadmin create --fs-type fsfs /usr/src/svn/example
+svn mkdir file:///usr/src/svn/example/trunk -m ''
+svn mkdir file:///usr/src/svn/example/branches -m ''
+svn mkdir file:///usr/src/svn/example/tags -m ''
+
+## Go to the parent directory of your working files
+cd /var/tmp/
+
+## Move your working files to a backup directory
+mv example/ example_bak/
+
+## Check-out from the repo a folder with the name of your working directory
+svn checkout file:///usr/src/svn/example/trunk example
+
+## Copy the contents from your backup directory to the working directory
+cp -R example_bak/* example/
+cd example
+
+## add its contents to SVN, commit it, and update the working directory
+svn add
+svn commit -m "Initial check-in"
+svn update
+</pre>
+</td>
+</tr>
+</table>
+<br>
+Alternatively, I created a little script that automates the above. It's not great, but it mostly works:
+Download: <a href="svncheckin.sh">svncheckin.sh</a>
+
+</p>
+<h2>SVN Hooks - Scripts that run on actions</h2><br>
+<p>
+One neat feature of SVN is the ability to use hooks to run scripts whenever an action is performed. SVN includes some templates in the repo directory's hooks directory:<br>
+<pre>
+post-commit.tmpl
+post-lock.tmpl
+post-revprop-change.tmpl
+post-unlock.tmpl
+pre-commit.tmpl
+pre-lock.tmpl
+pre-revprop-change.tmpl
+pre-unlock.tmpl
+start-commit.tmpl
+</pre>
+If you rename these to drop the .tmpl extension, SVN will run those scripts when their respective actions occur. For example, post-commit will run after you commit to the repo. You may find it useful to just move these into a template sub-directory (i.e. /usr/src/svn/example/hooks/templates).<br>
+</p>
+<h2>SVN Notify - Send Emails on Commits</h2><br>
+<p>
+SVN Notify is a neat little perl module you can use to email you the diff, comments, and user info whenever a commit is performed. Below are instructions on how to install it on CentOS:
+<pre>
+yum install perl
+perl -MCPAN -e 'install SVN::Notify'
+</pre>
+Once SVN Notify is installed, you'll need to create hooks to use it. Here's a very simple example: 
+<pre>
+# /usr/src/svn/example/hooks/post-commit
+#!/bin/sh
+/usr/local/bin/svnnotify \
+    --subject-prefix "SVN COMMIT" \
+    --revision $2 \
+    --subject-cx \
+    --with-diff \
+    --repos-path $1 \
+    --to "myemail@example.com"
+</pre>
+When you commit something to the repo, you'll then get an email such as below:
+<pre>
+Subject: SVN COMMIT[19] trunk/example.conf: This is a test commit.
+Date: Sat, 16 Jul 2016 10:57:42 -0700 (PDT)
+From: root@server1.example.com
+To: myemail@example.comg
+
+Revision: 19
+Author:   root
+Date:     2016-07-16 10:57:42 -0700 (Sat, 16 Jul 2016)
+Log Message:
+-----------
+This is a test commit.
+
+Modified Paths:
+--------------
+    trunk/example.conf
+
+Modified: trunk/example.conf
+===================================================================
+--- trunk/example.conf	2016-07-16 00:54:58 UTC (rev 18)
++++ trunk/example.conf	2016-07-16 17:57:42 UTC (rev 19)
+@@ -16,3 +16,5 @@
++
++# This is just a test comment I added to a file.
+</pre>
+</p>
+<h2>More advanced SVN Notify</h2><br>
+<p>
+You'll notice in the previous example it just shows "root" as the author. That's okay if you're the only person working on the code, but if you have multiple people, it'd be nice to see who the actual author was. Below is a more sophisticated example of the post-commit hook created by Craig Leres to identify the username of the person performing the commit, even if they're su'd to root:
+<pre>
+#!/bin/sh
+REPOS="$1"
+REV="$2"
+
+# Configurables
+dn="/var/tmp/example"
+watcher="myemail@example.com"
+extras=""
+
+PATH="/usr/local/bin:${PATH}"
+export PATH
+
+hostname="`hostname`"
+shostname="${hostname%.example.com}"
+subject="[${shostname}:${dn}]"
+
+# Determine and set the pid of the parent
+setppid()
+{
+        local _pid _ppid _cmd
+
+        _pid="$1"
+        shift
+
+        if [ -z "${_pid}" ]; then
+                echo "usage: setppid PID" 1>&2
+                exit 1
+        fi
+
+        _ppid=`/bin/ps -o ppid ${_pid} | fgrep -v 'PPID'`
+        if [ -n "${_ppid}" ]; then
+                _cmd="PPID=${_ppid}"
+                eval "export ${_cmd}"
+        fi
+}
+
+# Determine and set the login name of the parent process
+setuser()
+{
+        local _ppid _key _cmd _result
+
+        _ppid="$1"
+        shift
+        if [ -z "${_ppid}" ]; then
+                echo "usage: setuser PID" 1>&2
+                exit 1
+        fi
+
+        for _key in SUDO_USER USER; do
+                _result=`/bin/ps wwe${_ppid} |
+                    /usr/bin/fmt -1 |
+                    /bin/egrep "^\s*${_key}="`
+                if [ -n "${_result}" ]; then
+                        _cmd="`echo ${_result} | sed -e 's/.*=/PUSER=/'`"
+                        eval "export ${_cmd}"
+                        break
+                fi
+        done
+}
+
+# Set the svn:author if we can figure out who this is
+if [ -n "${PPID}" ]; then
+        # First look in the environment of our parent
+        setuser ${PPID}
+
+        # If that fails look in the environment of our grandparent
+        if [ -n "${PPID}" -a \( -z "${PUSER}" -o "${PUSER}" = "root" \) ]; then
+                setppid ${PPID}
+
+                # Try one last time (great-grandparent)
+                if [ -n "${PPID}" -a \
+                    \( -z "${PUSER}" -o "${PUSER}" = "root" \) ]; then
+                        setppid ${PPID}
+                fi
+                if [ -n "${PPID}" ]; then
+                        setuser ${PPID}
+                fi
+        fi
+
+        if [ -n "${PUSER}" ]; then
+                extras="${extras} --from ${PUSER}"
+                dn=/tmp/post-commit.$$
+                svn checkout file://${REPOS} ${dn} --depth empty
+                svn propset --revprop -r${REV} svn:author ${PUSER} ${dn}
+                rm -rf ${dn}
+        fi
+fi
+
+/usr/local/bin/svnnotify \
+    --subject-prefix "${subject}" \
+    --revision $REV \
+    --subject-cx \
+    --with-diff \
+    --repos-path $REPOS \
+    --to "${watcher}" \
+    ${extras}
+</pre>
+And the email doesn't look <i>too</i> different, but you'll notice some extra info is included:
+<pre>
+Subject: [server1:/var/tmp/example][20] trunk/example.conf: Reverting test commit.
+Date: Sat, 16 Jul 2016 10:58:46 -0700 (PDT)
+From: myusername@server1.example.com
+To: myemail@example.com
+
+Revision: 20
+Author:   myusername
+Date:     2016-07-16 10:58:46 -0700 (Sat, 16 Jul 2016)
+Log Message:
+-----------
+Reverting test commit.
+
+Modified Paths:
+--------------
+    trunk/example.conf
+
+Modified: trunk/example.conf
+===================================================================
+--- trunk/example.conf	2016-07-16 17:57:42 UTC (rev 19)
++++ trunk/example.conf	2016-07-16 17:58:46 UTC (rev 20)
+@@ -16,5 +16,3 @@
+-
+-# TEST
+</pre>
+<p class="footer">
+2016-Jul-16
+</p>
+</div>
+</body>
+</html>
