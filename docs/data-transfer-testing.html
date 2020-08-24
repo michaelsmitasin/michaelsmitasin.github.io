@@ -1,0 +1,123 @@
+<html>
+<head>
+<title>
+SMITASIN/DTT
+</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+</head>
+<body>
+<div id="headblock">
+<img src="../flag.png" height=32px width=50px>
+<a href="../"><h1>SMITASIN</a>/<a href="../docs.html">DOCS</a>/<br>
+Data Transfer Testing</h1>
+<hr>
+</div>
+<div id="textblock">
+<h2>Purpose</h2><br>
+<p>
+This is a quick guide for testing data transfer throughput between Linux hosts. Using these tests, you should be able to identify if the bottleneck is your network, your disks, your transfer protocols, or your host resources (CPU, NIC, etc). Tests that I recommend running:<br>
+<ul>
+<li>iperf3 RAM-to-RAM</li>
+<li>iperf3 RAM-to-disk</li>
+<li>iperf3 disk-to-RAM</li>
+<li>iperf3 disk-to-disk</li>
+<li>Real transfer protocol RAM-to-RAM</li>
+<li>Real transfer protocol RAM-to-disk</li>
+<li>Real transfer protocol disk-to-RAM</li>
+<li>Real transfer protocol disk-to-disk</li>
+</ul>
+</p>
+<h2>iperf3 basics</h2><br>
+<p>
+A basic iperf3 test with [server1] as the server (receiver) and [server2] as the client (sender). This just uses random data to/from RAM.<br><br>
+<table>
+<tr valign=top>
+<td>
+<pre>
+[server1]# iperf3 -s
+-------------------------        
+Server listening on 5201
+-------------------------        
+</pre>
+</td>
+<td>
+<pre>
+[server2]# iperf3 -c server1.example.com
+Connecting to host server1.example.com, port 5201
+[  4] local 10.0.0.2 port 40074 connected to 10.0.0.1 port 5201
+[ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+[  4]   0.00-1.00   sec  1.15 GBytes  9.92 Gbits/sec    0   3.22 MBytes
+[...]
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-10.00  sec  11.5 GBytes  9.90 Gbits/sec    0             sender
+[  4]   0.00-10.00  sec  11.5 GBytes  9.90 Gbits/sec                  
+</pre>
+</td>
+</tr>
+</table>
+</p>
+<h2>iperf3 flags</h2><br>
+<p>
+Some userful flags for iperf3 - see man iperf3 for more details:<br>
+<pre>
+-O5		Omits the first <b>5</b> seconds of the test from the total calculation (allowing TCP to ramp up)
+-P2		Run <b>2</b> parallel streams
+-t30		Time/duration of <b>30</b> seconds
+-u		Use <b>UDP</b> instead of TCP
+-b500M		Set bandwidth to <b>500Mbps</b> per-stream (i.e. -b500M but -P2 will be 2x 500Mbps streams)
+-F		Read from or write to a <b>file</b>
+</pre>
+<h2>Making Dummy Files</h2><br>
+<p>
+A basic iperf3 test will just test random data, but you may need to test reading/writing large numbers of small files. You can use dd to create such files:<br>
+<pre>
+dd if=/dev/urandom of=test.txt bs=1M count=1
+</pre>
+However, that will only create a single file... and incrementing count=1 won't get you multiple files. Below is a sample script that you can run with arguments for the number of files and size per file:<br>
+<pre>
+[server1]# vi makerandomfiles.sh
+
+#################### SCRIPT START ####################
+
+#!/bin/sh
+
+NUMFILES=$1
+SIZE=$2
+COUNTER=0
+
+while [ $COUNTER -lt $NUMFILES ]
+do
+echo $COUNTER
+dd if=/dev/urandom of=randfile$COUNTER bs=$SIZE count=1
+COUNTER=$((COUNTER+1))
+done
+
+##################### SCRIPT END #####################
+
+[server1]# chmod +x makerandomfiles.sh<br>
+</pre>
+Then running the below would create 10x files at 2M each:
+<pre>
+[server1]# ./makerandomfiles.sh 10 2M
+</pre>
+<h2>iperf3 with Dummy Files</h2><br>
+<p>
+You can use the -F flag with iperf3 to read from or write to files - allowing you to compare "raw" read/write to various transfer protocols (SCP, FTP, NFS, Samba/CIFS, etc). Note that this flag is added on <b>each side</b>. So, for example, you can omit it from the sender's side to still read from RAM, but include it on the receiver's side to write to disk. This way you can elimiate one variable at a time. Say you created your above dummy files in /var/tmp/, the below commands would read the dummy files from disk and write them back out to disk on the other end:<br>
+<pre>
+[server1]# iperf3 -s -F /var/tmp
+[server2]# iperf3 -c server1.example.com -F /var/tmp -t300
+</pre>
+<h2>Using a RAM Disk</h2><br>
+<p>
+RAM is orders of magnitude faster than spinning disk, and with the below commands, you can mount a filesystem directly from RAM to remove your storage system from the equation:
+<pre>
+mkdir /mnt/ramdisk
+mount -t tmpfs -o size=6g /mnt/ramdisk
+</pre>
+<p class="footer">
+2016-Jul-16
+</p>
+</div>
+</body>
+</html>
