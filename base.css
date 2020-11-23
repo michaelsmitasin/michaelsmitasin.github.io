@@ -62,12 +62,9 @@ pre {
         white-space: pre-wrap;
 }
 
-img.resize1 {
-  max-width:66%;
-  max-height:66%;
+responsive-image {
+  width:100%;
+  height:auto;
 }
 
-img.resize2 {
-  max-width:64%;
-  max-height:64%;
-}
+
