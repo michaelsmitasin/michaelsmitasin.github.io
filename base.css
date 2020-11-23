@@ -61,3 +61,13 @@ pre {
         font-size: 10pt;
         white-space: pre-wrap;
 }
+
+img.resize1 {
+  max-width:66%;
+  max-height:66%;
+}
+
+img.resize2 {
+  max-width:64%;
+  max-height:64%;
+}
