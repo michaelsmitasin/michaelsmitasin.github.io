@@ -33,6 +33,7 @@ My first inclination was to assume someone was causing a broadcast storm by intr
 </p>
 <p>
 Obviously, a packet capture was in order. We set up a monitor session on the router to mirror traffic on the 2x1GE port-channel to the EX4200 switches because the router’s located in a data center and it’s easy to rack mount a decently powerful capture box there. Here’s what it looked like:<br>
+<br>
 <img src="../images/eswd_cap1.png"></img><br>
 </p>
 <p>
@@ -45,10 +46,12 @@ But first, there are some things to understand:
   <li>The measured level for storm control is calculated on a sliding window on the order of magnitude of 10ms (milliseconds). That means if your storm control level is 1Gbps, that’s 10MB over 10ms. That’s relevant if you’re looking at Wireshark IO Graph with a tick interval of .001.</li>
 </ul>
 So… more data. The easiest way to verify that unknown unicast is the cause and identify the responsible device would be to see what the switch is flooding just before it triggers storm control. Since we have quite a few VLANs trunked to this switch, rather than go one-by-one, I just set up a trunk of all VLANs to a capture machine connected directly to the switch (note: not a mirror port, just a regular trunk). Here’s how that looked:<br>
+<br>
 <img src="../images/eswd_cap2.png"></img><br>
 </p>
 <p>
 Looking at the packet captures on Capture Box 2, I noticed a lot of unicast/TCP traffic getting flooded to it. That’s not right… unicast is… unicast, it should go to one place, and Capture Box 2 wasn’t even configured for IPv4 on that link (and my capture filter was set to “ether host not myMACaddr”)…<br>
+<br>
 <img src="../images/loltcp.png"></img><br>
 </p>
 <p>
@@ -68,7 +71,9 @@ Rx Bytes: 6,555,190
 </p>
 <p>
 That’s very weird. This is TCP, and TCP has a three-way handshake! You have to send something back for it to work! Looking closer, there was a very close MAC address, MACaddr2, which was one character away from MACaddr1, and it was the opposite: everything for it was eth.src==MACaddr2, none of it was eth.dst==MACaddr2. The source/destination IPs and TCP sequence numbers matched, so it had to be the same flow. To confirm, I reconfigured the port that Capture Box 2 was on to be an access port on the same VLAN as that device and did a quick ping while capturing:<br>
+<br>
 <img src="../images/eswd_ping.png"></img><br>
+<br>
 So… is that a problem? Logging into the switch, I did a quick “show ethernet-switching table | grep MACaddr1″ and sure enough, not present. MACaddr2 was, of course, because it was sending traffic. Also, on the router, both MACaddr1 and MACaddr2 were present in the ARP table. In fact, several IP addresses were ARPing with MACaddr1.
 </p>
 <p>
@@ -83,11 +88,14 @@ ifconfig_em1_alias0=inet 10.1.1.3 netmask 255.255.255.255"
 ifconfig_em1_alias1=inet 10.1.1.4 netmask 255.255.255.255"
 </pre>
 I threw together a quick FreeBSD lab and confirmed that behavior. So what’s the consequence of no packets being sent with MAC address MACaddr1? The MAC address never (or rarely) gets learned by the switch… and when a switch receives a frame for a destination which it does’t know (not in its MAC address table), it floods it out all ports:<br>
+<br>
 <img src="../images/eswd_yikes.png"></img><br>
 </p>
 <p>
 Here’s how the real flow looked (source was on a different subnet, VLAN and access switch, but same distribution switch):
+<br>
 <img src="../images/eswd_yikes2.png"></img><br>
+<br>
 So if the destination device was a regular desktop, this probably would have gone unnoticed. But regular desktops aren’t usually connected with two NICs, this was a server hosting a lot of websites, file shares, backups, etc. The traffic destined for it was significant, which meant the traffic getting flooded out all ports was significant. But it was still only connected at 1Gbps, so it wasn’t exactly saturating the ports by itself… some people may have noticed slower file transfers, but it wouldn’t have caused problems, right?
 </p>
 <p>
