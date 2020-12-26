@@ -94,7 +94,7 @@ So if the destination device was a regular desktop, this probably would have gon
 Well… about that storm control… it’s not a per-VLAN feature, it applies to the whole link, period. So once that unknown unicast traffic triggered it, <b>any</b> additional broadcast or unknown unicast traffic from the router was dropped.
 </p>
 <p>
-<h2>The solution?</h2>
+<h2>The solution?</h2><br>
 There are a lot of solutions. We run storm control level at 50% of link bandwidth; the default is 80%, so we could up it to that. But if we were running the default we might never learn about this issue, we’d just have a bunch of traffic being unicast flooded everywhere. There are also ways to configure FreeBSD to perform properly, from my understanding, basically binding traffic for an IP address to only use the interface it belongs to (so none of this traffic-coming-in-one-interface-going-out-another business). I’m not enough of a FreeBSD expert (at all) to know what that exact configuration is… perhaps iptables magic? You could also just put each NIC on a different subnet. In the end, the system administrator simply moved all IP addresses to one NIC, and that resolved the problem (since all traffic was exiting the one NIC anyway).
 </p>
 <p>
@@ -102,7 +102,7 @@ And how can you catch this in the future? Easiest is just capturing traffic on a
 </p>
 <hr>
 <p>
-<h2>Break it yourself</h2>
+<h2>Break it yourself</h2><br>
 <b>Don’t do this in your production network.</b> Or anyone else’s. I’m not responsible for you getting fired or arrested.
 </p>
 <p>
