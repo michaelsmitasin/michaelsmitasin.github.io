@@ -22,7 +22,7 @@ Unknown Unicast Flooding</h1>
 Hopefully this will be useful to other people who’ve also implemented <a href="http://www.juniper.net/techpubs/en_US/junos12.3/topics/concept/rate-limiting-storm-control-understanding.html">storm control on Juniper EX series switches (PDF)</a>. This has been tricky to locate, but I believe I now understand the root cause and have found a way to quickly and easily identify this specific situation (which seems like it could crop up easily). Why should you care if this is happening? Well, it could mean dropping a lot of traffic… but more about that later.
 </p>
 <p>
-<h2>Originally: Unknown Unicast Floods with FreeBSD Aliases and Juniper Storm Control (EX series)</h2>
+<h2>Originally: Unknown Unicast Floods with FreeBSD Aliases and Juniper Storm Control (EX series)</h2><br>
 For several months we’ve been receiving syslog messages about storm control going into effect on the link between one of our Juniper EX4200 switches that is acting as a distribution switch for a decent sized building complex and its router:
 <pre>
 Nov 4 05:31:49 myswitchname eswd[1308]: %DAEMON-1-ESWD_ST_CTL_ERROR_IN_EFFECT: ae0.0: storm control in effect on the port
