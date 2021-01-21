@@ -27,17 +27,17 @@ h1 {
 }
 
 h3 {
-        color: #0be42f;
+        color: #fdb515;
 }
 
 body {
         color: #ffffff;
-        background-color: #262626;
+        background-color: #003262;
         font-size: 12pt;
 }
 
 p.footer {
-        color: #555555;
+        color: #002344;
         font-size: 10pt;
         text-align: right;
 }
@@ -49,7 +49,7 @@ hr {
 }
 
 a {
-        color: #0be42f;
+        color: #fdb515;
         text-decoration: none;
 }
 
