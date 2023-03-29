@@ -58,8 +58,45 @@ Overall average miles driven (with roadtrips): 29.54 per day
 I haven’t tracked the time here as closely, so this is more anecdotal. The vast majority of my charging on the road (due to road trips), has been on the Tesla Supercharger network, but I’ve had a handful of L2 charging at RV sites and hotels (with 14-50 or TT30 adapters), and purchased the CCS1 adapter for use at non-Supercharger DC fast charging stations, and have used those a handful of times as well.
 </p>
 <p>
-
-
+To make a broad statement: I don’t spend a lot of time waiting around for the charging to finish. 
+</p>
+<p>
+Early on, I think I tended to charge the way one would fill-up a gas tank: run it low, then charge back up to full. The generally accepted wisdom these days is to make “frequent short stops” not “infrequent long stops”. I.e. charge 4x at 15 mins each, rather than 2x at 40 mins each (charge rate is nonlinear, so it takes longer to go 80->90% than it does to go 50->60%).
+</p>
+<p>
+Supercharging has consumed the majority of cost, but isn’t the majority of charging, it’s just expensive.
+</p>
+<p>
+<img src="../images/2023-03-23_ev-charging-per-source.png">
+</p>
+<p>
+<h2>Range Loss</h2>
+</p>
+<p>
+I normally set my maximum charge to 80%, as that supposedly extends the life of the battery. Since getting the car, I’ve recorded the estimated range when charged to 80% each 1st-of-the-month. About 6 months in, it started stopping at 79% charge, though I suspect this is a display issue (it can certainly charge about 80% if I set it to do so, and I suspect if I set the max to 81%, it would stop at 80%).
+</p>
+<p>
+The purpose of this is to try to estimate how much range (or total capacity) has been lost since getting the vehicle:
+</p>
+<p>
+<ul>
+ <li>Starting Range at 80% charge: 286mi</li>
+ <li>Current Range at 80% charge: 268mi</li>
+ <li>Estimated Lost Range: 18mi or 5%</li>
+</ul>
+</p>
+<p>
+<img src="../images/2023-03-23_ev-range-loss.png">
+</p>
+<p>
+Spurious reports from the internet suggest the range loss curve is steeper at the beginning of ownership, and levels out over time.
+</p>
+<p>
+<a href="https://teslamotorsclub.com/tmc/threads/how-i-recovered-half-of-my-batterys-lost-capacity.204712/">This post on Tesla Motors Club</a> also suggests some of the loss may be due to the Battery Management System (BMS) being unable to correctly estimate range because of charge conditions - which is plausible with how I use the car: it may not be getting many opportunities to take Open Circuit Voltage (OCV) readings at various states of charge (SOCs) in order to calibrate the range estimate. Going forward in year 2 of ownership, I’m planning to not leave the car plugged in at home as much, so it’ll get to take OCV ratings at more various SOCs.
+</p>
+<p>
+That all said: I’m not worried! I haven’t been stranded yet, or even come close, and the ~335 miles or range I’m estimated to have at 100% SOC is more than enough to get me between chargers (DCFC, L2, or even L1 if I’m patient).
+</p>
 <hr>
 <p class="footer">2023-Mar-29</p>
 </div>
