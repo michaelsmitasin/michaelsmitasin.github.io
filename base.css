@@ -62,8 +62,16 @@ pre {
         white-space: pre-wrap;
 }
 
-img {
-        max-width: 100%;
-        width: auto;
+@media screen {
+        img {
+                max-width: 100%;
+                width: auto;
+        }
 }
 
+@media not screen {
+        img {
+                max-width: 65%;
+                width: auto;
+        }
+}
