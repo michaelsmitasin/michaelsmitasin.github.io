@@ -79,3 +79,8 @@ pre {
         }
 }
 
+#logo {
+        max-width: 50px;
+        max-height: 32px;
+}
+
