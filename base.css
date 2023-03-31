@@ -69,9 +69,11 @@ pre {
         }
 }
 
-@media not screen {
+
+@media screen and (max-width: 900px) {
         img {
-                max-width: 65%;
+                max-width: 75%;
                 width: auto;
         }
 }
+
