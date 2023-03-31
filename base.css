@@ -66,6 +66,7 @@ pre {
         img {
                 max-width: 100%;
                 width: auto;
+                height: auto;
         }
 }
 
@@ -74,6 +75,7 @@ pre {
         img {
                 max-width: 75%;
                 width: auto;
+                height: auto;
         }
 }
 
