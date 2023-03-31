@@ -64,5 +64,6 @@ pre {
 
 img {
         max-width: 1000px;
+        width: auto;
 }
 
