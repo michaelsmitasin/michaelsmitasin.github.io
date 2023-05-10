@@ -8,14 +8,14 @@ SMITASIN/CV
 <body>
 
 <div id="headblock">
-<img src="flag.png" height=32px width=50px>
+<img src="flag.png" id="logo">
 <a href="../index.html"><h1>SMITASIN</a>/CV</h1>
 <hr>
 </div>
 
 <div id="textblock">
 <h3>Michael N. Smitasin</h3><br>
-Cyber Security Engineer, Systems Security Architect<br>
+Cybersecurity Engineer, Systems Security Architect<br>
 Lawrence Berkeley National Laboratory<br>
 <br>
 <h3>Research Interests</h3><br>
@@ -23,18 +23,23 @@ High-performance networking and security; open network monitoring and analysis; 
 <br>
 <h3>Experience</h3><br>
 <br>
-<b>Cyber Security Engineer, Systems Security Architect</b><br>
+<b>Cybersecurity Engineer, Systems Security Architect</b><br>
 Lawrence Berkeley National Laboratory (May 2018 - Present)<br>
 <ul>
+<li>Published Security Reference Architectures and Security Design Guide to assist system owners and implementers consider possible risks/mitigations/controls, and design their systems with security in mind.</li>
 <li>Provided network and security architecture design review and implementation consulting internally and externally, including scientific research staff, IT division service owners, construction project management, research & education organizations and private industry.</li>
-<li>Implemented column-oriented database system for high performance network log searching and analytics and presented work to cyber security staff from across Department of Energy national laboratory complex.</li>
+<li>Contributed subject matter expertise and documented LBNL implementation of NIST SP 800-53 Rev. 5 controls.</li>
+<li>Implemented cloud-native logging solution to aggregate audit, WAF, and EDR logs from multiple cloud service providers to a cloud-hosted log management and analytics platform. Wrote tools to integrate cloud-hosted solution with existing cybersecurity workflows.</li>
+<li>Implemented column-oriented database system for high performance network log searching and analytics and presented work to cybersecurity staff from across Department of Energy national laboratory complex.</li>
 <li>Developed configuration standards, processes, and security validation procedures for migrating between firewall vendors and provided guidance and advice to network group on project implementation.</li>
-<li>Evaluated and implemented service to provide web application firewall, caching/CDN, SSL/TLS termination and application logging functionality for ~330 public facing web servers, and developed tools for API integration to cyber security processes.</li>
+<li>Evaluated and implemented service to provide web application firewall, caching/CDN, SSL/TLS termination and application logging functionality for ~1500 public facing web servers, and developed tools for API integration to cybersecurity processes.</li>
 <li>Designed system to replace traditional RTBH with large scale border blocking capabilities up to 2^32 IPv4 addresses.</li>
-<li>Upgraded Cyber Security network infrastructure, including L2 switches, firewalls, and 40G/100G tap aggregation devices and defined new standards for cable management.</li>
-<li>Built tool for identifying device owners by correlating historical MAC/IP addresses across multiple authentication sources.</li>
+<li>Upgraded Cybersecurity network infrastructure, including L2 switches, firewalls, and 40G/100G tap aggregation devices and defined new standards for cable management.</li>
+<li>Built tools for identifying device owners by correlating historical MAC/IP addresses across multiple authentication sources.</li>
 <li>Optimized configuration of tap aggregation switches for TCAM scaling limitations, allowing for dynamic traffic shunting based on 5-tuple IPv4 and IPv6 match criteria.</li>
 <li>Investigated network intrusion incidents and built tools to detect and prevent exploitation of newly discovered vulnerabilities.</li>
+<li>Presented on network tapping, tap aggregation and web application firewalling to conferences and working groups composed of universities and other national laboratories.</li>
+<li>Contributed technical expertise to case study on Zero Trust and web application firewalling published by Cloudflare, Inc.</li>
 </ul>
 <b>Principal Network Engineer</b><br>
 Lawrence Berkeley National Laboratory (July 2016 - April 2018)<br>
@@ -42,7 +47,7 @@ Lawrence Berkeley National Laboratory (July 2016 - April 2018)<br>
 <li>Designed next generation campus aggregation routing layer and developed standards for configuring and implementing new routers with BGP, OSPF/v3, PIM, IGMP, HSRP, and Netflow v9.</li>
 <li>Led project to upgrade satellite locations to redundant, provider-diverse circuits for the same on-going cost as previous single-provider wave service. Moved each location to CWDM over dark fiber and 802.1ad (Q-in-Q) over Metro-Ethernet, improving link capacity in 3/4 of locations by 10x, and adding bandwidth and latency monitoring to all links.</li>
 <li>Led design of new wireless infrastructure to provide geographic redundancy for wireless core and improved link capacity.</li>
-<li>Led design of new tap aggregation infrastructure to accommodate 40G backbone network, additional 100G external peering links and provide geographic redundancy to cyber security monitoring systems.</li>
+<li>Led design of new tap aggregation infrastructure to accommodate 40G backbone network, additional 100G external peering links and provide geographic redundancy to cybersecurity monitoring systems.</li>
 <li>Tested, deployed, documented and trained staff on configuration of IPSec VPN tunnels to multiple Virtual Private Cloud providers.</li>
 <li>Led network group's implementation of multi-factor authentication using FIPS 140-2 Level 4 tokens and securing of network infrastructure to comply with DOE mandates. </li>
 <li>Led automation of network group's Linux server deployment and configuration management with Puppet.</li>
@@ -78,6 +83,12 @@ Lawrence Berkeley National Laboratory (August 2013 - July 2016)<br>
 </ul>
 <h3>Presentations & Publications</h3><br>
 <ul>
+<li><i>"Network Tapping for Zeek (Deep Dive)"</i><br>
+ESnet Cyber Infrastructure Engineering Lunch & Learn Series, March 2023</li>
+<li><i>"Network Tapping for Zeek"</i><br>
+ZeekWeek 2022, October 2022</li>
+<li><i>"Cloudflare Case Study: Lawrence Berkeley National Laboratory"</i><br>
+Cloudflare, Inc, September 2021</li>
 <li><i>"Cloudflare Lessons Learned"</i><br>
 ESnet Cyber Infrastructure Engineering Lunch & Learn Series, October 2020</li>
 <li><i>"Fast IOC searching with a columnar database (ClickHouse)"</i><br>
@@ -108,7 +119,7 @@ School of Architecture & Allied Arts, Digital Arts</li>
 </ul>
 <br>
 <hr>
-<p class="footer">2021-05-19</p>
+<p class="footer">2023-05-10</p>
 </div>
 
 </body>
